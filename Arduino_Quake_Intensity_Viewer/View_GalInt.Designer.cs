@@ -1,0 +1,91 @@
+﻿namespace Arduino_Quake_Intensity_Viewer
+{
+    partial class View_GalInt
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.components = new System.ComponentModel.Container();
+            this.View = new System.Windows.Forms.Timer(this.components);
+            this.MainText = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.SuspendLayout();
+            // 
+            // View
+            // 
+            this.View.Enabled = true;
+            this.View.Interval = 10;
+            this.View.Tick += new System.EventHandler(this.View_Tick);
+            // 
+            // MainText
+            // 
+            this.MainText.AutoSize = true;
+            this.MainText.BackColor = System.Drawing.Color.Transparent;
+            this.MainText.ForeColor = System.Drawing.Color.White;
+            this.MainText.Location = new System.Drawing.Point(0, 0);
+            this.MainText.Name = "MainText";
+            this.MainText.Size = new System.Drawing.Size(437, 288);
+            this.MainText.TabIndex = 0;
+            this.MainText.Text = "0000.00gal\r\n0000.00gal\r\n0000.00gal\r\n合成加速度:0000.00gal\r\n合成加速度最大:0000.00gal\r\n震度:0.00" +
+    "";
+            this.MainText.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Transparent;
+            this.label1.ForeColor = System.Drawing.Color.White;
+            this.label1.Location = new System.Drawing.Point(54, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(151, 144);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "加速度X:\r\n加速度Y:\r\n加速度Z:";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // View_GalInt
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(19F, 46F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(100)))));
+            this.ClientSize = new System.Drawing.Size(340, 226);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.MainText);
+            this.Font = new System.Drawing.Font("Koruri Regular", 20F);
+            this.Margin = new System.Windows.Forms.Padding(6, 9, 6, 9);
+            this.Name = "View_GalInt";
+            this.Text = "AQIV - データ表示画面";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.Timer View;
+        private System.Windows.Forms.Label MainText;
+        private System.Windows.Forms.Label label1;
+    }
+}

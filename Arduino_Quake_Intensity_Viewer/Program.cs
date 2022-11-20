@@ -16,7 +16,7 @@ namespace Arduino_Quake_Intensity_Viewer
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new MainDisplay());
         }
     }
 }

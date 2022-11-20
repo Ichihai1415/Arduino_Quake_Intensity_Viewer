@@ -1,6 +1,6 @@
 ﻿namespace Arduino_Quake_Intensity_Viewer
 {
-    partial class Form1
+    partial class MainDisplay
     {
         /// <summary>
         /// 必要なデザイナー変数です。
@@ -29,12 +29,29 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            this.SerialPort = new System.IO.Ports.SerialPort(this.components);
+            this.SuspendLayout();
+            // 
+            // SerialPort
+            // 
+            this.SerialPort.PortName = "COM5";
+            this.SerialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort_DataReceived);
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.IO.Ports.SerialPort SerialPort;
     }
 }
 
