@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
+using System.IO;
 
 namespace Arduino_Quake_Intensity_Viewer
 {
@@ -26,9 +27,7 @@ namespace Arduino_Quake_Intensity_Viewer
             try
             {
                 string SerialData = SerialPort.ReadLine();
-                string[] GalsSt = SerialData.Split(',');
-                if (GalsSt.Length == 4)
-                    Task.Run(() => { Main1(GalsSt); });
+                Task.Run(() => { Main1(SerialData); });
                 //Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff -> ") + SerialData);
             }
             catch
@@ -37,18 +36,41 @@ namespace Arduino_Quake_Intensity_Viewer
             }
 
         }
-        public void Main1(string[] SerialData)
+        public void Main1(string SerialData)
         {
             try
             {
-                List<double> Gals = SerialData.Select(double.Parse).ToList();
+                string[] GalsSt = SerialData.Split(',');
+                if (GalsSt.Length != 4)
+                    return;
+                List<double> Gals = GalsSt.Select(double.Parse).ToList();
                 GalInt.GalNow = Gals.ToArray();
+                if (Data == "")
+                    Data = SerialData;
+                else
+                    Data += "\n"+SerialData;
                 if (DateTime.Now.Second % 2 == 1)//奇数秒
                 {
                     Gals1.Add(Gals);
                     if (ConvertedTime != DateTime.Now.Second && Gals2.Count != 0)//奇数秒になって最初
                     {
-                        Console.WriteLine("#2計算開始 データ個数:" + Gals2.Count);
+                        Console.WriteLine("#2保存開始");
+                        DateTime dt = DateTime.Now - TimeSpan.FromSeconds(1);
+                        if (!Directory.Exists("Logs"))
+                            Directory.CreateDirectory("Logs");
+                        if (!Directory.Exists($"Logs\\{dt.Year}"))
+                            Directory.CreateDirectory($"Logs\\{dt.Year}");
+                        if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}"))
+                            Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}");
+                        if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}"))
+                            Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}");
+                        if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}"))
+                            Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}");
+                        if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}"))
+                            Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}");
+                        File.WriteAllText($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\{dt:yyyyMMddHHmmss}.txt", Data);
+                        Data = "";
+                        Console.WriteLine("#2保存終了計算開始 データ個数:" + Gals2.Count);
                         ConvertedTime = DateTime.Now.Second;
                         List<List<double>> SendGals = Gals2;
                         //Task<double> ToInt = Task.Run(() =>  { return GalToJMAInt(SendGals); });
@@ -62,20 +84,37 @@ namespace Arduino_Quake_Intensity_Viewer
                     Gals2.Add(Gals);
                     if (ConvertedTime != DateTime.Now.Second && Gals1.Count != 0)
                     {
-                        Console.WriteLine("#1計算開始 データ個数:" + Gals1.Count);
+                        Console.WriteLine("#1保存開始");
+                        DateTime dt = DateTime.Now - TimeSpan.FromSeconds(1);
+                        if (!Directory.Exists("Logs"))
+                            Directory.CreateDirectory("Logs");
+                        if (!Directory.Exists($"Logs\\{dt.Year}"))
+                            Directory.CreateDirectory($"Logs\\{dt.Year}");
+                        if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}"))
+                            Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}");
+                        if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}"))
+                            Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}");
+                        if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}"))
+                            Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}");
+                        if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}"))
+                            Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}");
+                        File.WriteAllText($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\{dt:yyyyMMddHHmmss}.txt", Data);
+                        Data = "";
+                        Console.WriteLine("#1保存終了計算開始 データ個数:" + Gals1.Count);
                         ConvertedTime = DateTime.Now.Second;
                         //Task<double> ToInt = Task.Run(() => { return GalToJMAInt(Gals1); });
                         GalInt.GalMax = Gals1[3].Max();
                         Gals1.Clear();
-                       // GalInt.IntNow = ToInt.Result;
+                        // GalInt.IntNow = ToInt.Result;
                     }
                 }
             }
-            catch(FormatException)
+            catch (FormatException)
             {
                 GalInt.GalNow = new double[] { 0.001, 0, 0, 0 };
             }
         }
+        public string Data="";
         /// <summary>
         /// galを気象庁震度階級に変換します。
         /// </summary>
