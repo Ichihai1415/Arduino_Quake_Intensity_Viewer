@@ -49,6 +49,8 @@ namespace Arduino_Quake_Intensity_Viewer
                     Data = SerialData;
                 else
                     Data += "\n"+SerialData;
+                if (Max < Gals[3])
+                    Max = Gals[3];
                 if (DateTime.Now.Second % 2 == 1)//奇数秒
                 {
                     Gals1.Add(Gals);
@@ -74,7 +76,8 @@ namespace Arduino_Quake_Intensity_Viewer
                         ConvertedTime = DateTime.Now.Second;
                         List<List<double>> SendGals = Gals2;
                         //Task<double> ToInt = Task.Run(() =>  { return GalToJMAInt(SendGals); });
-                        GalInt.GalMax = Gals2[3].Max();
+                        GalInt.GalMax = Max;
+                        Max = 0;
                         Gals2.Clear();
                         //GalInt.IntNow = ToInt.Result;
                     }
@@ -103,7 +106,8 @@ namespace Arduino_Quake_Intensity_Viewer
                         Console.WriteLine("#1保存終了計算開始 データ個数:" + Gals1.Count);
                         ConvertedTime = DateTime.Now.Second;
                         //Task<double> ToInt = Task.Run(() => { return GalToJMAInt(Gals1); });
-                        GalInt.GalMax = Gals1[3].Max();
+                        GalInt.GalMax = Max;
+                        Max = 0;
                         Gals1.Clear();
                         // GalInt.IntNow = ToInt.Result;
                     }
@@ -239,5 +243,6 @@ namespace Arduino_Quake_Intensity_Viewer
         public List<List<double>> Gals2 = new List<List<double>>();
         public View_GalInt GalInt = new View_GalInt();
         public int ConvertedTime = 0;
+        public double Max = 0;
     }
 }

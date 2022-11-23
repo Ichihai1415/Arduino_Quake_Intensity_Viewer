@@ -16,9 +16,9 @@ namespace Arduino_Quake_Intensity_Viewer
             MainText.Text = $"{string.Format("{0:0000.00}", GalNow[0])}gal\n{string.Format("{0:0000.00}", GalNow[1])}gal\n{string.Format("{0:0000.00}", GalNow[0])}gal\n合成加速度:{string.Format("{0:0000.00}", GalNow[3])}gal\n合成加速度最大:{string.Format("{0:0000.00}", GalMax)}gal\n震度:{string.Format("{0:0.00}", IntNow)}".Replace("震度:0.00", "震度:---");
             if (GalNow[0] == 0.001)
                 MainText.Text = $"加速度X:0000.00gal\n加速度Y:0000.00gal\n加速度Z:0000.00gal\n合成加速度:0000.00gal\n合成加速度最大:0000.00gal\n震度:0.00";
-            if (GalMax < 10)
+            if (GalMax < 15)
                 Back.BackColor = Color.FromArgb(0, 0, 50);
-            else if (GalMax < 15)
+            else if (GalMax < 30)
                 Back.BackColor = Color.Green;
             else if (GalMax < 50)
                 Back.BackColor = Color.Yellow;
@@ -27,7 +27,7 @@ namespace Arduino_Quake_Intensity_Viewer
             else if (GalMax < 500)
                 Back.BackColor = Color.Red;
             else
-                Back.BackColor = Color.Purple;
+                Back.BackColor = Color.FromArgb(250, 0, 250);
         }
         public double[] GalNow = { 0.0, 0.0, 0.0, 0.0 };
         public double GalMax = 0;

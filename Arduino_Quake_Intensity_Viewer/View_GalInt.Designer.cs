@@ -49,7 +49,7 @@
             this.MainText.Name = "MainText";
             this.MainText.Size = new System.Drawing.Size(348, 228);
             this.MainText.TabIndex = 0;
-            this.MainText.Text = "0000.00gal\r\n0000.00gal\r\n0000.00gal\r\n合成加速度:0000.00gal\r\n合成加速度最大:0000.00gal\r\n震度:0.00" +
+            this.MainText.Text = "0000.00gal\r\n0000.00gal\r\n0000.00gal\r\n合成加速度:0000.00gal\r\n最大合成加速度:0000.00gal\r\n震度:0.00" +
     "";
             this.MainText.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
@@ -60,7 +60,7 @@
             this.Text2.ForeColor = System.Drawing.Color.White;
             this.Text2.Location = new System.Drawing.Point(60, 6);
             this.Text2.Name = "Text2";
-            this.Text2.Size = new System.Drawing.Size(121, 114);
+            this.Text2.Size = new System.Drawing.Size(151, 144);
             this.Text2.TabIndex = 1;
             this.Text2.Text = "加速度X:\r\n加速度Y:\r\n加速度Z:";
             this.Text2.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -75,7 +75,7 @@
             // 
             // View_GalInt
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 38F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(19F, 46F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(100)))));
             this.ClientSize = new System.Drawing.Size(360, 240);
