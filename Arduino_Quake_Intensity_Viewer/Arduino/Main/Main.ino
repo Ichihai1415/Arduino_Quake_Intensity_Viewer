@@ -60,9 +60,8 @@ void setup()
 double OffsetX, OffsetY, OffsetZ = 0;
 bool First = true;
 
-void loop() 
-{
-
+void Get() 
+{                      
     int x, y, z;
     double X, Y, Z, A;
     adxl.readXYZ(&x, &y, &z);
@@ -76,7 +75,7 @@ void loop()
     X = x * 3.937 - OffsetX;
     Y = y * 3.937 - OffsetY;
     Z = z * 3.937 - OffsetZ;
-    OffsetX = x * 3.937;
+    OffsetX = x * 3.937;//無理やり加速度の変化を求めているので正しくない？(ずれたとき用)
     OffsetY = y * 3.937;
     OffsetZ = z * 3.937;
 
@@ -89,5 +88,11 @@ void loop()
     Serial.print(Z);
     Serial.print(",");
     Serial.println(A);
-    delay(100);
+}
+
+
+void loop() 
+{
+   Get();
+   delay(100);
 }
