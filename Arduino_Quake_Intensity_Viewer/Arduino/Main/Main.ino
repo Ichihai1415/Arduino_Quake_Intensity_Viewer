@@ -71,13 +71,16 @@ void get()
     OffsetZ = z * 3.937;
     First = false;
   }
+  
   X = x * 3.937 - OffsetX;
   Y = y * 3.937 - OffsetY;
   Z = z * 3.937 - OffsetZ;
+
+  /*
   OffsetX = x * 3.937;//無理やり加速度の変化を求めているので正しくない？(ずれたとき用)
   OffsetY = y * 3.937;
   OffsetZ = z * 3.937;
-
+  */
   A = sqrt(X * X + Y * Y + Z * Z);//合成加速度
 
   Serial.print(X);
