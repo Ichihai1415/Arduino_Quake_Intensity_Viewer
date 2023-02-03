@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
 using System.IO;
+using System.Threading;
 
 namespace Arduino_Quake_Intensity_Viewer
 {
@@ -244,5 +245,15 @@ namespace Arduino_Quake_Intensity_Viewer
         public View_GalInt GalInt = new View_GalInt();
         public int ConvertedTime = 0;
         public double Max = 0;
+
+        private void ReConnect_Click(object sender, EventArgs e)
+        {
+            //SerialPort.Write();
+            SerialPort.Write("RC");
+            SerialPort.Close();
+            SerialPort.Dispose();
+            Thread.Sleep(5000);
+            SerialPort.Open();
+        }
     }
 }

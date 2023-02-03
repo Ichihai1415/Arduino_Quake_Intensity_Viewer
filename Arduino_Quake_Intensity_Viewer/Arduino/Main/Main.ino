@@ -58,9 +58,13 @@ void setup()
 
 double OffsetX, OffsetY, OffsetZ = 0;
 bool First = true;
-
+void(*resetFunc)(void) = 0;
 void get()
 {
+  if (Serial.available() > 0)
+  {
+    resetFunc();
+  }
   int x, y, z;
   double X, Y, Z, A;
   adxl.readXYZ(&x, &y, &z);
