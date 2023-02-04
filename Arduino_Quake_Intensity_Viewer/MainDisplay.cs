@@ -88,6 +88,8 @@ namespace Arduino_Quake_Intensity_Viewer
                     Gals2.Add(Gals);
                     if (ConvertedTime != DateTime.Now.Second && Gals1.Count != 0)
                     {
+                        if (DateTime.Now.Second == 0)
+                            OutlierCheck(Gals1);
                         Console.WriteLine("#1保存開始");
                         DateTime dt = DateTime.Now - TimeSpan.FromSeconds(1);
                         if (!Directory.Exists("Logs"))
@@ -118,8 +120,59 @@ namespace Arduino_Quake_Intensity_Viewer
             {
                 GalInt.GalNow = new double[] { 0.001, 0, 0, 0 };
             }
+            catch(IOException)
+            {
+
+            }
         }
         public string Data="";
+        /// <summary>
+        /// 設置ずれ等の異常値を検知します。
+        /// </summary>
+        /// <remarks>差が15gal未満で最大-5gal以下か最小5gal以上なら検知</remarks>
+        /// <param name="Gals">1秒での加速度各方向全て。</param>
+        public void OutlierCheck(List<List<double>> Gals)
+        {
+            List<double> GalsX = new List<double>();
+            List<double> GalsY = new List<double>();
+            List<double> GalsZ = new List<double>();
+            foreach(List<double> Gals_ in Gals)
+            {
+                GalsX.Add(Gals_[0]);
+                GalsY.Add(Gals_[1]);
+                GalsZ.Add(Gals_[2]);
+            }
+            List<List<double>> Gals2 = new List<List<double>>
+            {
+                GalsX,
+                GalsY,
+                GalsZ
+            };
+            for (int i=0;i<2;i++)
+            {
+                double[] Gals_ = Gals2[i].ToArray();
+                Console.WriteLine($"Max:{Gals_.Max()}");
+                Console.WriteLine($"Min:{Gals_.Min()}");
+                Console.WriteLine($"Max-Min={Gals_.Max() - Gals_.Min()}");
+                if (Gals_.Max() - Gals_.Min() < 15  && (Gals_.Max()<-5|| Gals_.Min() > 5))
+                {
+                    ReConnectSend();
+                    break;
+                }
+            }
+        }
+        /// <summary>
+        /// データを送信して再接続します。
+        /// </summary>
+        /// <remarks>Arduino側で受信時リセット処理が必要です。</remarks>
+        public void ReConnectSend()
+        {
+            SerialPort.Write("RC");
+            SerialPort.Close();
+            SerialPort.Dispose();
+            Thread.Sleep(5000);
+            SerialPort.Open();
+        }
         /// <summary>
         /// galを気象庁震度階級に変換します。
         /// </summary>
@@ -245,15 +298,9 @@ namespace Arduino_Quake_Intensity_Viewer
         public View_GalInt GalInt = new View_GalInt();
         public int ConvertedTime = 0;
         public double Max = 0;
-
         private void ReConnect_Click(object sender, EventArgs e)
         {
-            //SerialPort.Write();
-            SerialPort.Write("RC");
-            SerialPort.Close();
-            SerialPort.Dispose();
-            Thread.Sleep(5000);
-            SerialPort.Open();
+            ReConnectSend();
         }
     }
 }
