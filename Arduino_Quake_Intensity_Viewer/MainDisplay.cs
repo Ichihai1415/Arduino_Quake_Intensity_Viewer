@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
 using System.Data;
+using System.IO;
+using System.IO.Ports;
 using System.Linq;
+using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO.Ports;
-using System.IO;
-using System.Threading;
 
 namespace Arduino_Quake_Intensity_Viewer
 {
@@ -49,7 +49,7 @@ namespace Arduino_Quake_Intensity_Viewer
                 if (Data == "")
                     Data = SerialData;
                 else
-                    Data += "\n"+SerialData;
+                    Data += "\n" + SerialData;
                 if (Max < Gals[3])
                     Max = Gals[3];
                 if (DateTime.Now.Second % 2 == 1)//奇数秒
@@ -120,12 +120,12 @@ namespace Arduino_Quake_Intensity_Viewer
             {
                 GalInt.GalNow = new double[] { 0.001, 0, 0, 0 };
             }
-            catch(IOException)
+            catch (IOException)
             {
 
             }
         }
-        public string Data="";
+        public string Data = "";
         /// <summary>
         /// 設置ずれ等の異常値を検知します。
         /// </summary>
@@ -136,7 +136,7 @@ namespace Arduino_Quake_Intensity_Viewer
             List<double> GalsX = new List<double>();
             List<double> GalsY = new List<double>();
             List<double> GalsZ = new List<double>();
-            foreach(List<double> Gals_ in Gals)
+            foreach (List<double> Gals_ in Gals)
             {
                 GalsX.Add(Gals_[0]);
                 GalsY.Add(Gals_[1]);
@@ -148,13 +148,13 @@ namespace Arduino_Quake_Intensity_Viewer
                 GalsY,
                 GalsZ
             };
-            for (int i=0;i<2;i++)
+            for (int i = 0; i < 3; i++)
             {
                 double[] Gals_ = Gals2[i].ToArray();
                 Console.WriteLine($"Max:{Gals_.Max()}");
                 Console.WriteLine($"Min:{Gals_.Min()}");
                 Console.WriteLine($"Max-Min={Gals_.Max() - Gals_.Min()}");
-                if (Gals_.Max() - Gals_.Min() < 15  && (Gals_.Max()<-5|| Gals_.Min() > 5))
+                if (Gals_.Max() - Gals_.Min() < 15 && (Gals_.Max() < -5 || Gals_.Min() > 5))
                 {
                     ReConnectSend();
                     break;
