@@ -8,6 +8,7 @@ ADXL345 adxl; //variable adxl is an instance of the ADXL345 library
 void setup()
 {
   Serial.begin(9600);
+  Serial.println("setup start...");
   adxl.powerOn();
 
   //set activity/ inactivity thresholds (0-255)
@@ -54,34 +55,58 @@ void setup()
   adxl.setInterrupt(ADXL345_INT_FREE_FALL_BIT,  1);
   adxl.setInterrupt(ADXL345_INT_ACTIVITY_BIT,   1);
   adxl.setInterrupt(ADXL345_INT_INACTIVITY_BIT, 1);
+  Serial.println("setup finish.");
   OffsetSetting();
 }
 
-double OffsetX, OffsetY, OffsetZ = 0;
+double OffsetX, OffsetY, OffsetZ;
 void(*resetFunc)(void) = 0;
 
 void OffsetSetting()
 {
-  double X, Y, Z;
-  for (int i = 0; i < 50; ++i)
+  Serial.println("Offset settig start...");
+  double X = 0; //分けないと値がおかしくなる?
+  double Y = 0;
+  double Z = 0;
+  for (int i = 0; i < 50; ++i)//平均を求める
   {
     int x, y, z;
     adxl.readXYZ(&x, &y, &z);
-    X = x + X;
-    Y = y + Y;
-    Z = z + Z;
-    delay(10);
+    X += x;
+    Y += y;
+    Z += z;
+    /*//異常確認用
+      Serial.print(x);
+      Serial.print(",");
+      Serial.print(y);
+      Serial.print(",");
+      Serial.println(z);
+      Serial.print(X);
+      Serial.print(",");
+      Serial.print(Y);
+      Serial.print(",");
+      Serial.println(Z);
+    */
+    delay(20);
   }
-  OffsetX = X / 50 * 3.937 ;
-  OffsetY = Y / 50 * 3.937 ;
-  OffsetZ = Z / 50 * 3.937 ;
+  OffsetX = X / 50 * 3.937;
+  OffsetY = Y / 50 * 3.937;
+  OffsetZ = Z / 50 * 3.937;
+  Serial.print("Offset Setted:");
+  Serial.print(OffsetX);
+  Serial.print(",");
+  Serial.print(OffsetY);
+  Serial.print(",");
+  Serial.println(OffsetZ);
+  Serial.println("---------data start----------");
 }
 
 void get()
 {
   if (Serial.available() > 0)//データ受信時
   {
-    resetFunc();
+    Serial.println("----------data received. reseting...----------");
+    resetFunc();//再起動
   }
   int x, y, z;
   double X, Y, Z, A;
