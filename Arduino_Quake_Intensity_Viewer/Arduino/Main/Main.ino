@@ -54,39 +54,42 @@ void setup()
   adxl.setInterrupt(ADXL345_INT_FREE_FALL_BIT,  1);
   adxl.setInterrupt(ADXL345_INT_ACTIVITY_BIT,   1);
   adxl.setInterrupt(ADXL345_INT_INACTIVITY_BIT, 1);
+  OffsetSetting();
 }
 
 double OffsetX, OffsetY, OffsetZ = 0;
-bool First = true;
 void(*resetFunc)(void) = 0;
+
+void OffsetSetting()
+{
+  double X, Y, Z;
+  for (int i = 0; i < 50; ++i)
+  {
+    int x, y, z;
+    adxl.readXYZ(&x, &y, &z);
+    X = x + X;
+    Y = y + Y;
+    Z = z + Z;
+    delay(10);
+  }
+  OffsetX = X / 50 * 3.937 ;
+  OffsetY = Y / 50 * 3.937 ;
+  OffsetZ = Z / 50 * 3.937 ;
+}
+
 void get()
 {
-  if (Serial.available() > 0)
+  if (Serial.available() > 0)//データ受信時
   {
     resetFunc();
   }
   int x, y, z;
   double X, Y, Z, A;
   adxl.readXYZ(&x, &y, &z);
-  if (First)
-  {
-    OffsetX = x * 3.937;
-    OffsetY = y * 3.937;
-    OffsetZ = z * 3.937;
-    First = false;
-  }
-  
   X = x * 3.937 - OffsetX;
   Y = y * 3.937 - OffsetY;
   Z = z * 3.937 - OffsetZ;
-
-  /*
-  OffsetX = x * 3.937;//無理やり加速度の変化を求めているので正しくない？(ずれたとき用)
-  OffsetY = y * 3.937;
-  OffsetZ = z * 3.937;
-  */
   A = sqrt(X * X + Y * Y + Z * Z);//合成加速度
-
   Serial.print(X);
   Serial.print(",");
   Serial.print(Y);
@@ -95,9 +98,9 @@ void get()
   Serial.print(",");
   Serial.println(A);
 }
-TimedAction getwrite = TimedAction(100,get);
+TimedAction getwrite = TimedAction(50, get);//1000/x Hz
 
 void loop()
 {
- getwrite.check();
+  getwrite.check();
 }
