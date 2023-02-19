@@ -129,7 +129,7 @@ namespace Arduino_Quake_Intensity_Viewer
         /// <summary>
         /// 設置ずれ等の異常値を検知します。
         /// </summary>
-        /// <remarks>差が15gal未満で最大-5gal以下か最小5gal以上なら検知</remarks>
+        /// <remarks>差が15gal未満で最大0gal以下か最小0gal以上なら検知</remarks>
         /// <param name="Gals">1秒での加速度各方向全て。</param>
         public void OutlierCheck(List<List<double>> Gals)
         {
@@ -154,7 +154,7 @@ namespace Arduino_Quake_Intensity_Viewer
                 Console.WriteLine($"Max:{Gals_.Max()}");
                 Console.WriteLine($"Min:{Gals_.Min()}");
                 Console.WriteLine($"Max-Min={Gals_.Max() - Gals_.Min()}");
-                if (Gals_.Max() - Gals_.Min() < 15 && (Gals_.Max() < -5 || Gals_.Min() > 5))
+                if (Gals_.Max() - Gals_.Min() < 15 && (Gals_.Max() < 0 || Gals_.Min() > 0))
                 {
                     ReConnectSend();
                     break;
