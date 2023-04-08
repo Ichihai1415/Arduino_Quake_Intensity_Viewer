@@ -38,7 +38,6 @@
             // View
             // 
             this.View.Enabled = true;
-            this.View.Interval = 50;
             this.View.Tick += new System.EventHandler(this.View_Tick);
             // 
             // MainText

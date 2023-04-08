@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -29,7 +30,7 @@ namespace Arduino_Quake_Intensity_Viewer
             else
                 Back.BackColor = Color.FromArgb(250, 0, 250);
         }
-        public double[] GalNow = { 0.0, 0.0, 0.0, 0.0 };
+        public List<double> GalNow = new List<double> { 0.0, 0.0, 0.0, 0.0 };
         public double GalMax = 0;
         public double IntNow = 0.001;
 

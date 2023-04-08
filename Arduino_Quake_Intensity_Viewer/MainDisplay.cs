@@ -45,7 +45,8 @@ namespace Arduino_Quake_Intensity_Viewer
                 if (GalsSt.Length != 4)
                     return;
                 List<double> Gals = GalsSt.Select(double.Parse).ToList();
-                GalInt.GalNow = Gals.ToArray();
+
+                GalInt.GalNow = Gals;
                 if (Data == "")
                     Data = SerialData;
                 else
@@ -118,7 +119,7 @@ namespace Arduino_Quake_Intensity_Viewer
             }
             catch (FormatException)
             {
-                GalInt.GalNow = new double[] { 0.001, 0, 0, 0 };
+                GalInt.GalNow = new List<double> { 0.001, 0, 0, 0 };
             }
             catch (IOException)
             {
