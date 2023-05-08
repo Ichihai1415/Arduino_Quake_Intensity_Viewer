@@ -20,7 +20,11 @@ namespace Arduino_Quake_Intensity_Viewer
         private void Form1_Load(object sender, EventArgs e)
         {
             SerialPort.Open();
-            GalInt.Show();
+            //表示画面を改修する
+            //GalInt.Show();
+            string SendText = DateTime.Now.ToString("yy,MM,dd,HH,mm,ss");
+            Thread.Sleep(999 - DateTime.Now.Millisecond);
+            SerialPort.WriteLine(SendText);
         }
 
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -28,7 +32,14 @@ namespace Arduino_Quake_Intensity_Viewer
             try
             {
                 string SerialData = SerialPort.ReadLine();
-                Task.Run(() => { Main1(SerialData); });
+
+                //変更後
+                Task.Run(() => { Main2(SerialData); });
+
+
+                //変更前
+                //Task.Run(() => { Main1(SerialData); });
+
                 //Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff -> ") + SerialData);
             }
             catch
@@ -37,6 +48,11 @@ namespace Arduino_Quake_Intensity_Viewer
             }
 
         }
+        public string Data = "";
+        /// <summary>
+        /// x,y,z,aで送られてくるやつ
+        /// </summary>
+        /// <param name="SerialData"></param>
         public void Main1(string SerialData)
         {
             try
@@ -126,7 +142,30 @@ namespace Arduino_Quake_Intensity_Viewer
 
             }
         }
-        public string Data = "";
+        /// <summary>
+        /// MaxGal*x,y,z,a/x,y,z,a/で送られてくるやつ
+        /// </summary>
+        /// <param name="SerialData"></param>
+        public void Main2(string SerialData)
+        {
+            string[] datas = SerialData.Split('*');
+            double MaxGal = double.Parse(datas[0]);
+
+            DateTime dt = DateTime.Now - TimeSpan.FromSeconds(1);
+            if (!Directory.Exists("Logs"))
+                Directory.CreateDirectory("Logs");
+            if (!Directory.Exists($"Logs\\{dt.Year}"))
+                Directory.CreateDirectory($"Logs\\{dt.Year}");
+            if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}"))
+                Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}");
+            if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}"))
+                Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}");
+            if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}"))
+                Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}");
+            if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}"))
+                Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}");
+            File.WriteAllText($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\{dt:yyyyMMddHHmmss}.txt", datas[1].Replace("/", "\n").Replace("\n\n", "\n"));
+        }
         /// <summary>
         /// 設置ずれ等の異常値を検知します。
         /// </summary>
@@ -168,7 +207,7 @@ namespace Arduino_Quake_Intensity_Viewer
         /// <remarks>Arduino側で受信時リセット処理が必要です。</remarks>
         public void ReConnectSend()
         {
-            SerialPort.Write("RC");
+            SerialPort.WriteLine("RC");
             SerialPort.Close();
             SerialPort.Dispose();
             Thread.Sleep(5000);

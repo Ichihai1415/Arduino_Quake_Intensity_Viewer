@@ -2,13 +2,14 @@
 #include <Wire.h>
 #include <ADXL345.h>//https://github.com/Seeed-Studio/Accelerometer_ADXL345
 #include <math.h>
+#include <TimeLib.h> //https://playground.arduino.cc/Code/Time/
 // fatal error: WProgram.h: No such file or directory が出たらライブラリフォルダのTimedAction.hの#include "WProgram.h"を#include "Arduino.h"に
 
 ADXL345 adxl; //variable adxl is an instance of the ADXL345 library
 void setup()
 {
-  Serial.begin(9600);
-  Serial.println("setup start...");
+  Serial.begin(57600);
+  //Serial.println("setup start...");
   adxl.powerOn();
 
   //set activity/ inactivity thresholds (0-255)
@@ -55,7 +56,7 @@ void setup()
   adxl.setInterrupt(ADXL345_INT_FREE_FALL_BIT,  1);
   adxl.setInterrupt(ADXL345_INT_ACTIVITY_BIT,   1);
   adxl.setInterrupt(ADXL345_INT_INACTIVITY_BIT, 1);
-  Serial.println("setup finish.");
+  //Serial.println("setup finish.");
   OffsetSetting();
 }
 
@@ -64,11 +65,11 @@ void(*resetFunc)(void) = 0;
 
 void OffsetSetting()
 {
-  Serial.println("Offset settig start...");
+  //Serial.println("Offset settig start...");
   double X = 0; //分けないと値がおかしくなる?
   double Y = 0;
   double Z = 0;
-  for (int i = 0; i < 50; ++i)//平均を求める
+  for (int i = 0; i < 30; i++)//平均を求める
   {
     int x, y, z;
     adxl.readXYZ(&x, &y, &z);
@@ -87,11 +88,12 @@ void OffsetSetting()
       Serial.print(",");
       Serial.println(Z);
     */
-    delay(20);
+    delay(10);
   }
-  OffsetX = X / 50 * 3.937;
-  OffsetY = Y / 50 * 3.937;
-  OffsetZ = Z / 50 * 3.937;
+  OffsetX = X / 30 * 3.937;
+  OffsetY = Y / 30 * 3.937;
+  OffsetZ = Z / 30 * 3.937;
+  /*
   Serial.print("Offset Setted:");
   Serial.print(OffsetX);
   Serial.print(",");
@@ -99,14 +101,59 @@ void OffsetSetting()
   Serial.print(",");
   Serial.println(OffsetZ);
   Serial.println("---------data start----------");
+  */
+}
+
+String Text = "";
+double Max = 0;
+byte latestSec;
+int c = 0;
+
+void save()
+{
+  if (latestSec != second())
+  {
+    get();
+    Serial.print(Max);
+    Serial.print("*");
+    Serial.print(Text);
+    Serial.print("*");
+    Serial.println(c);
+    Text = "";
+    Max = 0;
+    c = 0;
+    latestSec = second();
+  }
+  if (Serial.available() > 0)//データ受信時
+  {
+    char input[20];
+    byte times[6];//yearは-2000する
+    times[5] = 0;
+    Serial.readBytesUntil('\n', input, 20);
+    char* cs = strtok(input, ",");
+    for (byte i = 0; i < 6; i++)
+    {
+      times[i] = atoi(cs);
+      cs = strtok(NULL, ",");
+    }
+    if (times[5] != 0)
+    {
+      setTime(times[3], times[4], times[5] - 1, times[2], times[1], times[0] + 2000);//1秒前のを保存するから-1s
+    }
+    else
+    {
+      resetFunc();//再起動
+    }
+    latestSec = second();
+    //Serial.println("----------data received. reseting...----------");
+  }
 }
 
 void get()
 {
-  if (Serial.available() > 0)//データ受信時
+  if (c >= 50)
   {
-    Serial.println("----------data received. reseting...----------");
-    resetFunc();//再起動
+    return;
   }
   int x, y, z;
   double X, Y, Z, A;
@@ -115,17 +162,22 @@ void get()
   Y = y * 3.937 - OffsetY;
   Z = z * 3.937 - OffsetZ;
   A = sqrt(X * X + Y * Y + Z * Z);//合成加速度
-  Serial.print(X);
-  Serial.print(",");
-  Serial.print(Y);
-  Serial.print(",");
-  Serial.print(Z);
-  Serial.print(",");
-  Serial.println(A);
+  Max = max(Max, A);
+  Text += String(X);
+  Text += ",";
+  Text += String(Y);
+  Text += ",";
+  Text += String(Z);
+  Text += ",";
+  Text += String(A);
+  Text += "/";
+  c++;
 }
-TimedAction getwrite = TimedAction(50, get);//1000/x Hz
-
+//1000/x Hz
+TimedAction getAct = TimedAction(17, get); //なんか50いかないから調整 20未満だとRAM超えるかも(1個22.5byteくらい)
+TimedAction sendAct = TimedAction(17, save);
 void loop()
 {
-  getwrite.check();
+  sendAct.check();
+  getAct.check();
 }

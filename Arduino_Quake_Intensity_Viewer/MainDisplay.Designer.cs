@@ -35,6 +35,7 @@
             // 
             // SerialPort
             // 
+            this.SerialPort.BaudRate = 57600;
             this.SerialPort.PortName = "COM5";
             this.SerialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort_DataReceived);
             // 
@@ -54,7 +55,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(324, 182);
             this.Controls.Add(this.ReConnect);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainDisplay";
             this.Text = "AQIV_管理画面";
             this.Load += new System.EventHandler(this.Form1_Load);
