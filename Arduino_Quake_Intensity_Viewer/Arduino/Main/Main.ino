@@ -106,46 +106,79 @@ void OffsetSetting()
 
 String Text = "";
 double Max = 0;
+double latestA = 0;
+double maxDifA = 0;
 byte latestSec;
 int c = 0;
+double xMax = 0;
+double xMin = 0;
+double yMax = 0;
+double yMin = 0;
+double zMax = 0;
+double zMin = 0;
 
 void save()
 {
   if (latestSec != second())
   {
+    Serial.println("----------second change");
+    latestSec = second();
     get();
-    Serial.print(Max);
-    Serial.print("*");
     Serial.print(Text);
     Serial.print("*");
-    Serial.println(c);
+    Serial.print(Max);
+    Serial.print("*");
+    Serial.print(maxDifA * 0.02);//等加速度直線運動v=atと仮定
+    Serial.print("*");
+    Serial.print(hour());
+    Serial.print(":");
+    Serial.print(minute());
+    Serial.print(":");
+    Serial.println(second());
     Text = "";
     Max = 0;
+    maxDifA = 0;
     c = 0;
-    latestSec = second();
+    if (xMax <= 0 || xMin >= 0 || yMax <= 0 || yMin >= 0 || zMax <= 0 || zMin >= 0)
+    {
+      OffsetSetting();
+    }
+    xMax = 0;
+    xMin = 0;
+    yMax = 0;
+    yMin = 0;
+    zMax = 0;
+    zMin = 0;
   }
   if (Serial.available() > 0)//データ受信時
   {
+    Serial.println("----------data recieved");
     char input[20];
-    byte times[6];//yearは-2000する
-    times[5] = 0;
-    Serial.readBytesUntil('\n', input, 20);
+    byte times[7];//yearは-2000する
+    times[6] = 0;
+    Serial.readBytesUntil('\n', input, 32);
     char* cs = strtok(input, ",");
-    for (byte i = 0; i < 6; i++)
+    for (byte i = 0; i < 7; i++)
     {
       times[i] = atoi(cs);
       cs = strtok(NULL, ",");
     }
-    if (times[5] != 0)
+    if (times[6] == 1)
     {
-      setTime(times[3], times[4], times[5] - 1, times[2], times[1], times[0] + 2000);//1秒前のを保存するから-1s
+      setTime(times[3], times[4], times[5] - 1, times[2], times[1], times[0] + 2000);//1秒前のがくるから-1s
+      Serial.print("------------");
+      Serial.print(times[3]);
+      Serial.print(":");
+      Serial.print(times[4]);
+      Serial.print(":");
+      Serial.println(times[5]);
     }
     else
     {
+      Serial.println("----------reseting...");
       resetFunc();//再起動
     }
     latestSec = second();
-    //Serial.println("----------data received. reseting...----------");
   }
 }
 
@@ -162,7 +195,6 @@ void get()
   Y = y * 3.937 - OffsetY;
   Z = z * 3.937 - OffsetZ;
   A = sqrt(X * X + Y * Y + Z * Z);//合成加速度
-  Max = max(Max, A);
   Text += String(X);
   Text += ",";
   Text += String(Y);
@@ -171,6 +203,16 @@ void get()
   Text += ",";
   Text += String(A);
   Text += "/";
+  Max = max(Max, A);
+  maxDifA = max(maxDifA, abs(latestA - A));
+  latestA = A;
+  xMax = max(xMax, X);
+  xMin = min(xMin, X);
+  yMax = max(yMax, Y);
+  yMin = min(yMin, Y);
+  zMax = max(zMax, Z);
+  zMin = min(zMin, Z);
+
   c++;
 }
 //1000/x Hz

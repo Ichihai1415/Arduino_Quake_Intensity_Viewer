@@ -81,6 +81,12 @@
     <Compile Include="View_GalInt.Designer.cs">
       <DependentUpon>View_GalInt.cs</DependentUpon>
     </Compile>
+    <Compile Include="View_GalInt2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View_GalInt2.Designer.cs">
+      <DependentUpon>View_GalInt2.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="MainDisplay.resx">
       <DependentUpon>MainDisplay.cs</DependentUpon>
     </EmbeddedResource>
@@ -95,6 +101,9 @@
     </Compile>
     <EmbeddedResource Include="View_GalInt.resx">
       <DependentUpon>View_GalInt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View_GalInt2.resx">
+      <DependentUpon>View_GalInt2.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="..\.editorconfig">
       <Link>.editorconfig</Link>

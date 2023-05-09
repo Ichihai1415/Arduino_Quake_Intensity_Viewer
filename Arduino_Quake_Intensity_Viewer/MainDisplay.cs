@@ -4,7 +4,6 @@ using System.Data;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
-using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,11 +19,8 @@ namespace Arduino_Quake_Intensity_Viewer
         private void Form1_Load(object sender, EventArgs e)
         {
             SerialPort.Open();
-            //表示画面を改修する
             //GalInt.Show();
-            string SendText = DateTime.Now.ToString("yy,MM,dd,HH,mm,ss");
-            Thread.Sleep(999 - DateTime.Now.Millisecond);
-            SerialPort.WriteLine(SendText);
+            GalInt2.Show();
         }
 
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -33,18 +29,17 @@ namespace Arduino_Quake_Intensity_Viewer
             {
                 string SerialData = SerialPort.ReadLine();
 
-                //変更後
-                Task.Run(() => { Main2(SerialData); });
-
-
-                //変更前
-                //Task.Run(() => { Main1(SerialData); });
-
-                //Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff -> ") + SerialData);
+                if (!SerialData.Contains("----------"))
+                {
+                    Task.Run(() => { Main2(SerialData.Replace("\n","")); });
+                    //Task.Run(() => { Main1(SerialData); });
+                }
+                else
+                Console.WriteLine("受信:" + SerialData.Replace("\n", ""));
             }
-            catch
+            catch (Exception ex)
             {
-
+                Console.WriteLine(ex);
             }
 
         }
@@ -141,6 +136,10 @@ namespace Arduino_Quake_Intensity_Viewer
             {
 
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
         /// <summary>
         /// MaxGal*x,y,z,a/x,y,z,a/で送られてくるやつ
@@ -148,23 +147,51 @@ namespace Arduino_Quake_Intensity_Viewer
         /// <param name="SerialData"></param>
         public void Main2(string SerialData)
         {
-            string[] datas = SerialData.Split('*');
-            double MaxGal = double.Parse(datas[0]);
+            try
+            {
+                string[] datas = SerialData.Split('*');
+                double PGA = double.Parse(datas[1]);
+                double PGV = double.Parse(datas[2]);
+                double Int;
+                if (PGV < 7)
+                    Int = 2.165 + 2.262 * Math.Log10(PGV);
+                else
+                    Int = 2.002 + 2.603 * Math.Log10(PGV) - 0.213 * Math.Pow(Math.Log10(PGV), 2);
+                if (PGA >= 1000)
+                    PGA = Math.Round(PGA, MidpointRounding.AwayFromZero);
+                else if (PGA >= 100)
+                    PGA = Math.Round(PGA, 1, MidpointRounding.AwayFromZero);
+                if (PGV >= 1000)
+                    PGV = Math.Round(PGV, MidpointRounding.AwayFromZero);
+                else if (PGV >= 100)
+                    PGV = Math.Round(PGV, 1, MidpointRounding.AwayFromZero);
+                Int = Math.Round(Int, 2, MidpointRounding.AwayFromZero);
+                GalInt2.PGA = PGA;
+                GalInt2.PGV = PGV;
+                GalInt2.Int = Int;
+                DateTime dt = DateTime.Now - TimeSpan.FromSeconds(1);
+                if (!Directory.Exists("Logs"))
+                    Directory.CreateDirectory("Logs");
+                if (!Directory.Exists($"Logs\\{dt.Year}"))
+                    Directory.CreateDirectory($"Logs\\{dt.Year}");
+                if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}"))
+                    Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}");
+                if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}"))
+                    Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}");
+                if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}"))
+                    Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}");
+                if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}"))
+                    Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}");
+                File.WriteAllText($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\{dt:yyyyMMddHHmmss}.txt", datas[0].Replace("/", "\n").Replace("\n\n", "\n"));
+            }/*
+            catch (IOException)
+            {
 
-            DateTime dt = DateTime.Now - TimeSpan.FromSeconds(1);
-            if (!Directory.Exists("Logs"))
-                Directory.CreateDirectory("Logs");
-            if (!Directory.Exists($"Logs\\{dt.Year}"))
-                Directory.CreateDirectory($"Logs\\{dt.Year}");
-            if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}"))
-                Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}");
-            if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}"))
-                Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}");
-            if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}"))
-                Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}");
-            if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}"))
-                Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}");
-            File.WriteAllText($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\{dt:yyyyMMddHHmmss}.txt", datas[1].Replace("/", "\n").Replace("\n\n", "\n"));
+            }*/
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
         /// <summary>
         /// 設置ずれ等の異常値を検知します。
@@ -207,21 +234,33 @@ namespace Arduino_Quake_Intensity_Viewer
         /// <remarks>Arduino側で受信時リセット処理が必要です。</remarks>
         public void ReConnectSend()
         {
+            Console.WriteLine($"再接続");
             SerialPort.WriteLine("RC");
             SerialPort.Close();
             SerialPort.Dispose();
             Thread.Sleep(5000);
             SerialPort.Open();
         }
- 
+
         public List<List<double>> Gals1 = new List<List<double>>();
         public List<List<double>> Gals2 = new List<List<double>>();
         public View_GalInt GalInt = new View_GalInt();
+        public View_GalInt2 GalInt2 = new View_GalInt2();
         public int ConvertedTime = 0;
         public double Max = 0;
         private void ReConnect_Click(object sender, EventArgs e)
         {
             ReConnectSend();
+        }
+
+        private void TimeCheck_Tick(object sender, EventArgs e)
+        {
+            Console.WriteLine($"時刻送信");
+            TimeCheck.Enabled = false;
+            SerialPort.WriteLine(DateTime.Now.ToString("yy,MM,dd,HH,mm,ss,1"));
+            TimeCheck.Interval = (60 - DateTime.Now.Second) * 1000 - DateTime.Now.Millisecond;
+            Console.WriteLine($"待機{(double)TimeCheck.Interval / 1000.0}s");
+            TimeCheck.Enabled = true;
         }
     }
 }

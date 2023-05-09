@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.SerialPort = new System.IO.Ports.SerialPort(this.components);
             this.ReConnect = new System.Windows.Forms.Button();
+            this.TimeCheck = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // SerialPort
@@ -48,6 +49,11 @@
             this.ReConnect.Text = "再接続";
             this.ReConnect.UseVisualStyleBackColor = true;
             this.ReConnect.Click += new System.EventHandler(this.ReConnect_Click);
+            // 
+            // TimeCheck
+            // 
+            this.TimeCheck.Enabled = true;
+            this.TimeCheck.Tick += new System.EventHandler(this.TimeCheck_Tick);
             // 
             // MainDisplay
             // 
@@ -67,6 +73,7 @@
 
         private System.IO.Ports.SerialPort SerialPort;
         private System.Windows.Forms.Button ReConnect;
+        private System.Windows.Forms.Timer TimeCheck;
     }
 }
 
