@@ -250,7 +250,7 @@ namespace Arduino_Quake_Intensity_Viewer
         public double Max = 0;
         private void ReConnect_Click(object sender, EventArgs e)
         {
-            ReConnectSend();
+            Application.Restart();
         }
 
         private void TimeCheck_Tick(object sender, EventArgs e)

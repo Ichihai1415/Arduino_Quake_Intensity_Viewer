@@ -36,7 +36,7 @@
             // 
             // SerialPort
             // 
-            this.SerialPort.BaudRate = 57600;
+            this.SerialPort.BaudRate = 115200;
             this.SerialPort.PortName = "COM5";
             this.SerialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.SerialPort_DataReceived);
             // 
