@@ -1,14 +1,16 @@
 #include <TimedAction.h>//https://playground.arduino.cc/Code/TimedAction/
 #include <Wire.h>
+//#include <SD.h>
 #include <ADXL345.h>//https://github.com/Seeed-Studio/Accelerometer_ADXL345
 #include <math.h>
 #include <TimeLib.h> //https://playground.arduino.cc/Code/Time/
 // fatal error: WProgram.h: No such file or directory が出たらライブラリフォルダのTimedAction.hの#include "WProgram.h"を#include "Arduino.h"に
 
 ADXL345 adxl; //variable adxl is an instance of the ADXL345 library
+//File file;
 void setup()
 {
-  Serial.begin(57600);
+  Serial.begin(115200);
   //Serial.println("setup start...");
   adxl.powerOn();
 
@@ -119,9 +121,14 @@ double zMin = 0;
 
 void save()
 {
+
+}
+
+void get()
+{
   if (latestSec != second())
   {
-    Serial.println("----------second change");
+    Serial.println("----------second change. save.");
     latestSec = second();
     get();
     Serial.print(Text);
@@ -135,6 +142,39 @@ void save()
     Serial.print(minute());
     Serial.print(":");
     Serial.println(second());
+/*
+    //保存
+    String path1 = "/";
+    path1 += String(year());
+    path1 += "-";
+    path1 += String(month());
+    String path2 = path1 + "/" + String(day());
+    String path3 = path2 + "/" + String(hour());
+    String path4 = path3 + "/" + String(minute());
+    /*
+    Serial.print("----------path:");
+    Serial.println(path1);*//*
+    if(!SD.exists(path1))
+    {
+      SD.mkdir(path1);
+    }
+    if(!SD.exists(path2))
+    {
+      SD.mkdir(path2);
+    }
+    if(!SD.exists(path3))
+    {
+      SD.mkdir(path3);
+    }
+    if(!SD.exists(path4))
+    {
+      SD.mkdir(path4);
+    }
+    file = SD.open(path4 + "/" + String(second()) + ".txt");
+    file.print(Text);
+    file.close();
+    Serial.println("----------saved");*/
+    
     Text = "";
     Max = 0;
     maxDifA = 0;
@@ -180,10 +220,10 @@ void save()
     }
     latestSec = second();
   }
-}
 
-void get()
-{
+
+
+  
   if (c >= 50)
   {
     return;
@@ -217,9 +257,9 @@ void get()
 }
 //1000/x Hz
 TimedAction getAct = TimedAction(17, get); //なんか50いかないから調整 20未満だとRAM超えるかも(1個22.5byteくらい)
-TimedAction sendAct = TimedAction(17, save);
+//TimedAction sendAct = TimedAction(17, save);
 void loop()
 {
-  sendAct.check();
+  //sendAct.check();
   getAct.check();
 }
