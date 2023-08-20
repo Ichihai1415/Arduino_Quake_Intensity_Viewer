@@ -31,11 +31,11 @@ namespace Arduino_Quake_Intensity_Viewer
 
                 if (!SerialData.Contains("----------"))
                 {
-                    Task.Run(() => { Main2(SerialData.Replace("\n","")); });
+                    Task.Run(() => { Main2(SerialData.Replace("\n", "")); });
                     //Task.Run(() => { Main1(SerialData); });
                 }
                 else
-                Console.WriteLine("受信:" + SerialData.Replace("\n", ""));
+                    Console.WriteLine("受信:" + SerialData.Replace("\n", ""));
             }
             catch (Exception ex)
             {
@@ -259,7 +259,7 @@ namespace Arduino_Quake_Intensity_Viewer
             TimeCheck.Enabled = false;
             SerialPort.WriteLine(DateTime.Now.ToString("yy,MM,dd,HH,mm,ss,1"));
             TimeCheck.Interval = (60 - DateTime.Now.Second) * 1000 - DateTime.Now.Millisecond;
-            Console.WriteLine($"待機{(double)TimeCheck.Interval / 1000.0}s");
+            Console.WriteLine($"待機{TimeCheck.Interval / 1000d}s");
             TimeCheck.Enabled = true;
         }
     }
