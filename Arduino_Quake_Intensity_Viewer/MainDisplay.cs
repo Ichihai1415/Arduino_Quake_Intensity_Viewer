@@ -141,6 +141,8 @@ namespace Arduino_Quake_Intensity_Viewer
                 Console.WriteLine(ex);
             }
         }
+
+        public const string saveDir = "D:\\Logs\\acc-1D:\\Logs\\acc-1";
         /// <summary>
         /// MaxGal*x,y,z,a/x,y,z,a/で送られてくるやつ
         /// </summary>
@@ -169,13 +171,12 @@ namespace Arduino_Quake_Intensity_Viewer
                 Int = Math.Round(Int, 2, MidpointRounding.AwayFromZero);*/
                 GalInt2.PGA = PGA;
                 DateTime dt = DateTime.Now - TimeSpan.FromSeconds(1);
-                Directory.CreateDirectory("Logs");
-                Directory.CreateDirectory($"Logs\\{dt.Month}");
-                Directory.CreateDirectory($"Logs\\{dt.Month}\\{dt.Day}");
-                Directory.CreateDirectory($"Logs\\{dt.Month}\\{dt.Day}\\{dt.Hour}");
-                Directory.CreateDirectory($"Logs\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}");
-                File.WriteAllText($"Logs\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\{dt:MMddHHmmss}.txt", datas[0].Replace("/", "\n").Replace("\n\n", "\n"));
-                File.WriteAllText($"Logs\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\_year.txt", dt.Year.ToString());
+                Directory.CreateDirectory($"{saveDir}\\{dt.Month}");
+                Directory.CreateDirectory($"{saveDir}\\{dt.Month}\\{dt.Day}");
+                Directory.CreateDirectory($"{saveDir}\\{dt.Month}\\{dt.Day}\\{dt.Hour}");
+                Directory.CreateDirectory($"{saveDir}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}");
+                File.WriteAllText($"{saveDir}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\{dt:HHmmss}.txt", datas[0].Replace("/", "\n").Replace("\n\n", "\n"));
+                File.WriteAllText($"{saveDir}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\_year.txt", dt.Year.ToString());
                 GalInt2.Change();
             }/*
             catch (IOException)
