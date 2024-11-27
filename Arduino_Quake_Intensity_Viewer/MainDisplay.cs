@@ -151,6 +151,7 @@ namespace Arduino_Quake_Intensity_Viewer
             {
                 string[] datas = SerialData.Split('*');
                 double PGA = double.Parse(datas[1]);
+                /*
                 double PGV = double.Parse(datas[2]);
                 double Int;
                 if (PGV < 7)
@@ -165,24 +166,17 @@ namespace Arduino_Quake_Intensity_Viewer
                     PGV = Math.Round(PGV, MidpointRounding.AwayFromZero);
                 else if (PGV >= 100)
                     PGV = Math.Round(PGV, 1, MidpointRounding.AwayFromZero);
-                Int = Math.Round(Int, 2, MidpointRounding.AwayFromZero);
+                Int = Math.Round(Int, 2, MidpointRounding.AwayFromZero);*/
                 GalInt2.PGA = PGA;
-                GalInt2.PGV = PGV;
-                GalInt2.Int = Int;
                 DateTime dt = DateTime.Now - TimeSpan.FromSeconds(1);
-                if (!Directory.Exists("Logs"))
-                    Directory.CreateDirectory("Logs");
-                if (!Directory.Exists($"Logs\\{dt.Year}"))
-                    Directory.CreateDirectory($"Logs\\{dt.Year}");
-                if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}"))
-                    Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}");
-                if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}"))
-                    Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}");
-                if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}"))
-                    Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}");
-                if (!Directory.Exists($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}"))
-                    Directory.CreateDirectory($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}");
-                File.WriteAllText($"Logs\\{dt.Year}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\{dt:yyyyMMddHHmmss}.txt", datas[0].Replace("/", "\n").Replace("\n\n", "\n"));
+                Directory.CreateDirectory("Logs");
+                Directory.CreateDirectory($"Logs\\{dt.Month}");
+                Directory.CreateDirectory($"Logs\\{dt.Month}\\{dt.Day}");
+                Directory.CreateDirectory($"Logs\\{dt.Month}\\{dt.Day}\\{dt.Hour}");
+                Directory.CreateDirectory($"Logs\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}");
+                File.WriteAllText($"Logs\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\{dt:MMddHHmmss}.txt", datas[0].Replace("/", "\n").Replace("\n\n", "\n"));
+                File.WriteAllText($"Logs\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\_year.txt", dt.Year.ToString());
+                GalInt2.Change();
             }/*
             catch (IOException)
             {
