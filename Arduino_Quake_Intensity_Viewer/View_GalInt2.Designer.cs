@@ -59,7 +59,7 @@
             this.PGAPGV.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F);
             this.PGAPGV.Location = new System.Drawing.Point(120, 10);
             this.PGAPGV.Name = "PGAPGV";
-            this.PGAPGV.Size = new System.Drawing.Size(120, 50);
+            this.PGAPGV.Size = new System.Drawing.Size(135, 50);
             this.PGAPGV.TabIndex = 3;
             this.PGAPGV.Text = "00.00";
             this.PGAPGV.TextAlign = System.Drawing.ContentAlignment.MiddleRight;

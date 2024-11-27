@@ -16,8 +16,27 @@ namespace Arduino_Quake_Intensity_Viewer
         {
             InitializeComponent();
         }
+        public const string saveDir = "D:\\Logs\\acc-1";
+
         private void Form1_Load(object sender, EventArgs e)
         {
+            /*//フォルダ作成用
+            for (int M = 1; M <= 12; M++)
+            {
+                Directory.CreateDirectory($"{saveDir}\\{M}");
+                for (int d = 1; d <= 31; d++)
+                {
+                    Directory.CreateDirectory($"{saveDir}\\{M}\\{d}");
+                    for (int h = 0; h <= 23; h++)
+                    {
+                        Directory.CreateDirectory($"{saveDir}\\{M}\\{d}\\{h}");
+                        for (int m = 0; m <= 59; m++)
+                            Directory.CreateDirectory($"{saveDir}\\{M}\\{d}\\{h}\\{m}");
+                    }
+                }
+
+            }*/
+
             SerialPort.Open();
             //GalInt.Show();
             GalInt2.Show();
@@ -142,7 +161,6 @@ namespace Arduino_Quake_Intensity_Viewer
             }
         }
 
-        public const string saveDir = "D:\\Logs\\acc-1D:\\Logs\\acc-1";
         /// <summary>
         /// MaxGal*x,y,z,a/x,y,z,a/で送られてくるやつ
         /// </summary>
@@ -171,10 +189,6 @@ namespace Arduino_Quake_Intensity_Viewer
                 Int = Math.Round(Int, 2, MidpointRounding.AwayFromZero);*/
                 GalInt2.PGA = PGA;
                 DateTime dt = DateTime.Now - TimeSpan.FromSeconds(1);
-                Directory.CreateDirectory($"{saveDir}\\{dt.Month}");
-                Directory.CreateDirectory($"{saveDir}\\{dt.Month}\\{dt.Day}");
-                Directory.CreateDirectory($"{saveDir}\\{dt.Month}\\{dt.Day}\\{dt.Hour}");
-                Directory.CreateDirectory($"{saveDir}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}");
                 File.WriteAllText($"{saveDir}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\{dt:HHmmss}.txt", datas[0].Replace("/", "\n").Replace("\n\n", "\n"));
                 File.WriteAllText($"{saveDir}\\{dt.Month}\\{dt.Day}\\{dt.Hour}\\{dt.Minute}\\_year.txt", dt.Year.ToString());
                 GalInt2.Change();
